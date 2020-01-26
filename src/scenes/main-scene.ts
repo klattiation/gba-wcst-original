@@ -1,4 +1,4 @@
-import Phaser, { GameObjects, Scene } from "phaser"
+import { GameObjects, Geom, Input, Scene } from "phaser"
 import {
   ATLAS,
   ASSET_PATH,
@@ -13,6 +13,7 @@ import {
   getIsGameComplete,
   getCurrentCard,
   getTrumpCriteria,
+  getGameResults,
 } from "../state/game/game.selectors"
 import { store } from ".."
 import { CardData } from "../state/game/game.props"
@@ -22,8 +23,9 @@ import { playCard } from "../state/game/game.actions"
 import FeedbackLabel from "../game-objects/feedback-label"
 import { InstructionController } from "../controllers/instruction-ctrl"
 import Button from "../game-objects/button"
+import { saveResult } from "../services/api-srv"
 
-const PLAYER_CARD_POS = new Phaser.Geom.Point(GAME_CENTER.x, 450)
+const PLAYER_CARD_POS = new Geom.Point(GAME_CENTER.x, 450)
 
 class MainScene extends Scene {
   private playerCard: Card | undefined
@@ -85,6 +87,7 @@ class MainScene extends Scene {
       x: PLAYER_CARD_POS.x,
       y: PLAYER_CARD_POS.y,
     })
+    this.playerCard.setVisible(false)
     this.add.existing(this.playerCard)
 
     this.stacks = STACK.map((cardData, idx) => {
@@ -133,7 +136,7 @@ class MainScene extends Scene {
   }
 
   private handleDrop = (
-    pointer: Phaser.Input.Pointer,
+    pointer: Input.Pointer,
     card: Card,
     dropZone: GameObjects.Zone
   ) => {
@@ -161,11 +164,28 @@ class MainScene extends Scene {
     const isGameOver = getIsGameComplete(state)
     if (isGameOver) {
       this.playerCard?.setVisible(false)
-      return
+      await saveResult(getGameResults(state))
+      this.hideCards()
+      this.showResult()
     }
 
     this.updateCard()
     this.stacks?.forEach(stack => stack.setScale(1))
+    return Promise.resolve(true)
+  }
+
+  private hideCards() {
+    this.playerCard?.setVisible(false)
+    this.stacks?.forEach(stack => stack.setVisible(false))
+  }
+
+  private showResult() {
+    const { x, y } = GAME_CENTER
+    const label = this.add.text(x, y, "Vielen Dank für's Mitmachen!", {
+      ...instructionFontStyle,
+      fontSize: "48px",
+    })
+    label.setOrigin(0.5)
   }
 
   private updateCard() {
@@ -177,7 +197,9 @@ class MainScene extends Scene {
     }
   }
 
-  private handleShowExample = () => {}
+  private handleShowExample = () => {
+    this.playerCard?.setVisible(true)
+  }
 
   private handleStartGame = () => {
     this.updateCard()

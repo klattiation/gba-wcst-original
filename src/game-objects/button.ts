@@ -12,7 +12,7 @@ interface ButtonProps {
 const FONT_STYLE = {
   fontFamily: FONT.SNIGLET,
   fontSize: "24px",
-  color: COLOR.PETROL,
+  color: COLOR.DARK_BLUE,
 }
 
 const PADDING = 32

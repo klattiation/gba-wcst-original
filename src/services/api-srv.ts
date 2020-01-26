@@ -7,7 +7,7 @@ interface GameResult {
 
 // const API_BASE_URL = "http://localhost:3001"
 const API_BASE_URL = "https://gba-wisconsin-masterarbeit.herokuapp.com"
-const GAME_ID = "marketing-manager"
+const GAME_ID = "original"
 
 export const saveResult = async (result: GameResult) => {
   try {
