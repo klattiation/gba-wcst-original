@@ -1,7 +1,12 @@
 import { Reducer, AnyAction } from "redux"
 import last from "lodash/last"
 import { GameState, PlayCardPayload } from "./game.props"
-import { getInitialState } from "./game.state"
+import {
+  getInitialState,
+  CRITERIA_CHANGE_THRESHOLD,
+  SCORE_WIN,
+  SCORE_LOSE,
+} from "./game.state"
 import { PLAY_CARD, RESET } from "./game.actions"
 
 const game: Reducer<GameState, AnyAction> = (
@@ -18,13 +23,9 @@ const game: Reducer<GameState, AnyAction> = (
   }
 }
 
-const SCORE_WIN = 500
-const SCORE_LOSE = -500
-const CRITERIA_CHANGE_THRESHOLD = 7
-
 const doPlayCard = (state: GameState, payload: PlayCardPayload): GameState => {
-  const { playedCard, stackCard, criteria } = payload
-  const isCorrect = stackCard[criteria] === playedCard[criteria]
+  const { playedCard, stackCard, trump } = payload
+  const isCorrect = stackCard[trump] === playedCard[trump]
   const round = state.round + 1
   const newCombo = isCorrect ? state.combo + 1 : 0
   const lastScore = last(state.scores) || 0

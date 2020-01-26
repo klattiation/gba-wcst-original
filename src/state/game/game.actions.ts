@@ -5,15 +5,15 @@ export const PLAY_CARD = `${BASE}.PLAY_CARD`
 export const RESET = `${BASE}.RESET`
 
 export const playCard = (
-  playerCard: CardData,
+  playedCard: CardData,
   stackCard: CardData,
-  criteria: CriteriaName
+  trump: CriteriaName
 ) => ({
   type: PLAY_CARD,
   payload: {
-    playerCard,
+    playedCard,
     stackCard,
-    criteria,
+    trump,
   },
 })
 

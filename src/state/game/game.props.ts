@@ -47,7 +47,7 @@ export interface GameState {
 export interface PlayCardPayload {
   stackCard: CardData
   playedCard: CardData
-  criteria: CriteriaName
+  trump: CriteriaName
 }
 
 export type PlayCardActionCreator = ActionCreator<

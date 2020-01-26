@@ -1,13 +1,17 @@
 import { GameObjects, Scene, Tweens } from "phaser"
-import { ATLAS } from "../../constants"
-import { stopTween } from "../../utils"
-import { CardData } from "../../state/game/game.props"
+import { ATLAS } from "../constants"
+import { stopTween } from "../utils"
+import { CardData } from "../state/game/game.props"
 
-interface CardProps {
+export interface CardProps {
   data: CardData
   scene: Scene
   x: number
   y: number
+}
+
+export enum CardDataKey {
+  CARD_DATA = "cardData",
 }
 
 class Card extends GameObjects.Sprite {
@@ -15,13 +19,13 @@ class Card extends GameObjects.Sprite {
 
   constructor(props: CardProps) {
     super(props.scene, props.x, props.y, ATLAS.LEVEL, getFrame(props.data))
-    this.setData(props.data)
+    this.setData(CardDataKey.CARD_DATA, props.data)
+    this.setOrigin(0.5)
+  }
 
-    // const bounds = this.sprite.getBounds()
-    // this.zone = new Zone(scene, 0, 0, bounds.width, bounds.height)
-    // this.zone.setOrigin(this.sprite.originX, this.sprite.originY)
-    // this.zone.setRectangleDropZone(bounds.width, bounds.height)
-    // this.add(this.zone)
+  updateCardData(cardData: CardData) {
+    this.setData(CardDataKey.CARD_DATA, cardData)
+    this.setFrame(getFrame(cardData))
   }
 
   activateDnd() {

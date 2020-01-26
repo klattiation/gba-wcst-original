@@ -1,14 +1,24 @@
 import Phaser, { GameObjects, Scene } from "phaser"
 import { ATLAS, ASSET_PATH, SCENE, GAME_CENTER } from "../constants"
-import Card from "../game-objects/cards/card"
-import { getIsGameComplete, getCurrentCard } from "../state/game/game.selectors"
+import Card, { CardDataKey } from "../game-objects/card"
+import {
+  getIsGameComplete,
+  getCurrentCard,
+  getTrumpCriteria,
+} from "../state/game/game.selectors"
 import ErrorFlash from "../game-objects/error-flash"
 import { store } from ".."
 import { CardData } from "../state/game/game.props"
 import { STACK } from "../state/game/game.state"
+import CardStack from "../game-objects/card-stack"
+import { playCard } from "../state/game/game.actions"
+
+const PLAYER_CARD_POS = new Phaser.Geom.Point(GAME_CENTER.x, 500)
 
 class MainScene extends Scene {
   private flash: ErrorFlash | undefined
+  private playerCard: Card | undefined
+  private stacks: CardStack[] | undefined
 
   constructor() {
     super({ key: SCENE.MAIN })
@@ -20,23 +30,24 @@ class MainScene extends Scene {
 
   create() {
     const state = store.getState()
-    const playerCard = new Card({
+    this.playerCard = new Card({
       scene: this,
       data: getCurrentCard(state) as CardData,
-      x: GAME_CENTER.x,
-      y: 500,
+      x: PLAYER_CARD_POS.x,
+      y: PLAYER_CARD_POS.y,
     })
-    playerCard.activateDnd()
-    this.add.existing(playerCard)
+    this.playerCard.activateDnd()
+    this.add.existing(this.playerCard)
 
-    STACK.forEach((cardData, idx) => {
-      const stackCard = new Card({
+    this.stacks = STACK.map((cardData, idx) => {
+      const stackCard = new CardStack({
         scene: this,
         data: cardData,
-        x: 570 + idx * 150,
+        x: 500 + idx * 200,
         y: 200,
       })
       this.add.existing(stackCard)
+      return stackCard
     })
 
     this.input.on("dragenter", this.handleDragEnter)
@@ -49,37 +60,56 @@ class MainScene extends Scene {
 
   private handleDragEnter = (
     pointer: any,
-    product: any,
+    draggedCard: Card,
     dropZone: GameObjects.Zone
   ) => {
-    // const card: Card = dropZone.parentContainer as Card
-    // card.animateDragOver()
+    const stack = dropZone.parentContainer as CardStack
+    stack.setScale(1.2)
   }
 
   private handeDragLeave = (
     pointer: any,
-    product: any,
+    draggedCard: any,
     dropZone: GameObjects.Zone
-  ) => {}
+  ) => {
+    const stack = dropZone.parentContainer as CardStack
+    stack.setScale(1)
+  }
 
   private handeDragEnd = (
     pointer: any,
-    product: Product,
+    draggedCard: Card,
     hasDropped: boolean
-  ) => {}
+  ) => {
+    this.playerCard?.setPosition(PLAYER_CARD_POS.x, PLAYER_CARD_POS.y)
+  }
 
   private handleDrop = (
     pointer: Phaser.Input.Pointer,
-    product: Product,
+    draggedCard: Card,
     dropZone: GameObjects.Zone
-  ) => {}
+  ) => {
+    const stack = dropZone.parentContainer as CardStack
+    const playerCard = draggedCard.getData(CardDataKey.CARD_DATA)
+    const trump = getTrumpCriteria(store.getState())
+    store.dispatch(playCard(playerCard, stack.cardData, trump))
+  }
 
   private handleStoreUpdate = async () => {
     const state = store.getState()
     const isGameOver = getIsGameComplete(state)
     if (isGameOver) {
-      console.log("game over")
+      this.playerCard?.setVisible(false)
+      return
     }
+
+    const cardData = getCurrentCard(state)
+    if (cardData) {
+      this.playerCard?.updateCardData(cardData)
+      this.playerCard?.setPosition(PLAYER_CARD_POS.x, PLAYER_CARD_POS.y)
+    }
+
+    this.stacks?.forEach(stack => stack.setScale(1))
   }
 
   private loadAtlas = (atlas: ATLAS) => {

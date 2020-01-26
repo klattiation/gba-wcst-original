@@ -11,6 +11,9 @@ const { STAR, TRIANGLE, CIRCLE, CROSS } = CardShape
 const { RED, BLUE, YELLOW, GREEN } = CardColor
 
 export const INITIAL_SCORE = 0
+export const SCORE_WIN = 1
+export const SCORE_LOSE = -1
+export const CRITERIA_CHANGE_THRESHOLD = 10
 
 export const PLAYER_CARDS: CardData[] = [
   { shape: STAR, eyes: 2, color: YELLOW },

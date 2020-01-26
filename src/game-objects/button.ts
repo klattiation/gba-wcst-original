@@ -1,5 +1,5 @@
 import { GameObjects, Scene, Tweens } from "phaser"
-import { FONT, COLOR } from "../../constants"
+import { FONT, COLOR } from "../constants"
 import { tickStep } from "d3-array"
 
 interface ButtonProps {
