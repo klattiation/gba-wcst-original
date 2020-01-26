@@ -1,6 +1,5 @@
 import { GameObjects, Scene, Tweens } from "phaser"
 import { FONT, COLOR } from "../constants"
-import { tickStep } from "d3-array"
 
 interface ButtonProps {
   scene: Scene
@@ -15,6 +14,8 @@ const FONT_STYLE = {
   fontSize: "24px",
   color: COLOR.PETROL,
 }
+
+const PADDING = 32
 
 export enum BUTTON_EVENT {
   CLICK = "click",
@@ -44,7 +45,7 @@ class Button extends GameObjects.Container {
   }
 
   getWidth() {
-    return this.getBounds().width
+    return this.getBounds().width + PADDING
   }
 
   enable(flag: boolean) {
@@ -91,7 +92,7 @@ class Button extends GameObjects.Container {
 
   private renderBg(rect: GameObjects.Graphics) {
     const borderRadius = 10
-    const width = this.label.width + 32
+    const width = this.label.width + PADDING
     const height = 42
     rect.fillStyle(0xffffff)
     rect.fillRoundedRect(-width / 2, -height / 2, width, height, borderRadius)

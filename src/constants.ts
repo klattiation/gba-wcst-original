@@ -20,6 +20,7 @@ export enum FONT {
 
 export enum EVENTS {
   START_GAME = "startGame",
+  SHOW_EXAMPLE = "showExample",
 }
 
 export const ASSET_PATH = "assets/atlases"

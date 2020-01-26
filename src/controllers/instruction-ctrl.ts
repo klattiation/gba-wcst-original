@@ -1,4 +1,5 @@
 import { EVENTS } from "../constants"
+import { PLAYER_CARDS } from "../state/game/game.state"
 import { Scene } from "phaser"
 
 export class InstructionController {
@@ -27,39 +28,19 @@ export class InstructionController {
 
 const instructions = [
   {
-    text: `Um Kosten gering zu halten und die Inhalte unserer Werbekampagnen noch effizienter gestalten zu können, sollen sich unsere Marketingkampagnen zukünftig nur an jeweils eine ausgewählte Zielgruppe richten.`,
+    text: `Bei der folgenden Aufgabe sollst du Karten nach verschiedenen Regeln (Farbe, Form, Anzahl) zu einer von vier Referenzkarten zuordnen. Nach jeder Zuordnung erhältst du eine Rückmeldung, ob diese korrekt oder falsch war. Wenn deine Zuordnung nicht richtig war, solltest du eine andere Regel ausprobieren.`,
     buttonText: `Weiter`,
   },
   {
-    text: `Hier ein Überblick über unsere wichtigsten Zielgruppen...`,
+    event: EVENTS.SHOW_EXAMPLE,
+    text: `Hier ein Beispiel zur Verdeutlichung:\r\nWenn du nach Farbe sortierst, würdest du auf die erste Karte klicken. Wenn du nach Form sortierst, würdest du die zweite Karte auswählen. Wenn du nach Anzahl sortierst, würdest du die dritte Karte anklicken. Ob du nach der richtigen Regel sortierst, erkennst du anhand des Feedbacks.`,
     buttonText: `Weiter`,
   },
   {
-    text: `Wie du sehen kannst, haben die Zielgruppen unterschiedliche Präferenzen bezüglich des Kommunikationskanals, der Produktkategorie, der Preisgestaltung, des Produktdesigns und ihrer Werte.`,
-    buttonText: `Weiter`,
-  },
-  {
-    text: `Deine Aufagbe ist es, jedes der folgenden Produkte derjenigen Zielgruppe zuzuordnen, die dir dafür am geeignetsten erscheint.`,
-    buttonText: `Weiter`,
-  },
-  {
-    text: `Aufgrund der unterschiedlichen Ansprüche und Bedürfnisse ist es nicht immer offensichtlich, welche Zielgruppe am besten angesprochen werden sollte.`,
-    buttonText: `Weiter`,
-  },
-  {
-    text: `Im Anschluss an jede Zuordnung erfährst du, ob du mit deiner Marketingkampagne einen Gewinn oder Verlust erzielt hast. Dadurch kannst du erkennen, welche Strategie erfolgbringend ist.`,
-    buttonText: `Weiter`,
-  },
-  {
-    text: `Sei dir jedoch bewusst, dass sich Kundenbedürfnisse auch manchmal ändern können und dann eine neue Strategie erfordern!`,
-    buttonText: `Weiter`,
-  },
-  {
-    text: `Den aktuellen Stand deiner Ausgaben/Einnahmen wird dir rechts unten angezeigt. Du startest mit einem Budget von 10.000€. Das Ziel ist natürlich, den Gewinn zu maximieren.`,
+    text: `Es gibt insgesamt ${PLAYER_CARDS.length} Durchgänge.`,
     buttonText: `Los geht's!`,
   },
   {
-    event: EVENTS.START_GAME,
-    text: `Ordne nun die Produkte der passenden Zielgruppe zu.`,
+    text: ``,
   },
 ]

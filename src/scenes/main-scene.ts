@@ -1,29 +1,42 @@
 import Phaser, { GameObjects, Scene } from "phaser"
-import { ATLAS, ASSET_PATH, SCENE, GAME_CENTER } from "../constants"
+import {
+  ATLAS,
+  ASSET_PATH,
+  SCENE,
+  GAME_CENTER,
+  COLOR,
+  FONT,
+  EVENTS,
+} from "../constants"
 import Card, { CardDataKey } from "../game-objects/card"
 import {
   getIsGameComplete,
   getCurrentCard,
   getTrumpCriteria,
 } from "../state/game/game.selectors"
-import ErrorFlash from "../game-objects/error-flash"
 import { store } from ".."
 import { CardData } from "../state/game/game.props"
 import { STACK } from "../state/game/game.state"
 import CardStack from "../game-objects/card-stack"
 import { playCard } from "../state/game/game.actions"
 import FeedbackLabel from "../game-objects/feedback-label"
+import { InstructionController } from "../controllers/instruction-ctrl"
+import Button from "../game-objects/button"
 
-const PLAYER_CARD_POS = new Phaser.Geom.Point(GAME_CENTER.x, 500)
+const PLAYER_CARD_POS = new Phaser.Geom.Point(GAME_CENTER.x, 450)
 
 class MainScene extends Scene {
-  private flash: ErrorFlash | undefined
   private playerCard: Card | undefined
   private stacks: CardStack[] | undefined
   private feedback: FeedbackLabel | undefined
+  private instructionCtrl: InstructionController
+  private instructionLabel: GameObjects.Text | undefined
+  private instructionBtn: Button | undefined
 
   constructor() {
     super({ key: SCENE.MAIN })
+
+    this.instructionCtrl = new InstructionController(this)
   }
 
   preload() {
@@ -33,8 +46,40 @@ class MainScene extends Scene {
   create() {
     const state = store.getState()
 
+    this.events.on(EVENTS.SHOW_EXAMPLE, this.handleShowExample)
+    this.events.on(EVENTS.START_GAME, this.handleStartGame)
+
     this.feedback = new FeedbackLabel({ scene: this })
     this.add.existing(this.feedback)
+
+    const instruction = this.instructionCtrl.instruction
+    this.instructionLabel = this.add.text(
+      32,
+      650,
+      instruction.text,
+      instructionFontStyle
+    )
+    this.instructionLabel.setWordWrapWidth(1200)
+
+    this.instructionBtn = new Button({
+      scene: this,
+      x: 0,
+      y: 800,
+      text: instruction.buttonText,
+      onClick: btn => {
+        const nextInstr = this.instructionCtrl.next()
+        this.instructionLabel?.setText(nextInstr.text)
+        if (nextInstr.buttonText) {
+          btn.setText(nextInstr.buttonText)
+          btn.setX(btn.getWidth() / 2 + 32)
+          btn.setVisible(true)
+        } else {
+          btn.setVisible(false)
+        }
+      },
+    })
+    this.instructionBtn.setX(this.instructionBtn.getWidth() / 2 + 32)
+    this.add.existing(this.instructionBtn)
 
     this.playerCard = new Card({
       scene: this,
@@ -131,9 +176,19 @@ class MainScene extends Scene {
     this.stacks?.forEach(stack => stack.setScale(1))
   }
 
+  private handleShowExample = () => {}
+
+  private handleStartGame = () => {}
+
   private loadAtlas = (atlas: ATLAS) => {
     this.load.multiatlas(atlas, `${ASSET_PATH}/${atlas}.json`, ASSET_PATH)
   }
+}
+
+const instructionFontStyle = {
+  color: COLOR.WHITE,
+  fontFamily: FONT.SNIGLET,
+  fontSize: "24px",
 }
 
 export default MainScene
