@@ -78,6 +78,12 @@ export const PLAYER_CARDS: CardData[] = [
   { shape: CROSS, eyes: 1, color: GREEN },
 ]
 
+export const EXAMPLE_CARD: CardData = {
+  shape: TRIANGLE,
+  eyes: 1,
+  color: BLUE,
+}
+
 export const STACK: CardData[] = [
   { shape: CIRCLE, eyes: 1, color: RED },
   { shape: TRIANGLE, eyes: 2, color: GREEN },

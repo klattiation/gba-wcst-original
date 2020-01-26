@@ -16,7 +16,7 @@ import {
 } from "../state/game/game.selectors"
 import { store } from ".."
 import { CardData } from "../state/game/game.props"
-import { STACK } from "../state/game/game.state"
+import { STACK, EXAMPLE_CARD } from "../state/game/game.state"
 import CardStack from "../game-objects/card-stack"
 import { playCard } from "../state/game/game.actions"
 import FeedbackLabel from "../game-objects/feedback-label"
@@ -44,8 +44,6 @@ class MainScene extends Scene {
   }
 
   create() {
-    const state = store.getState()
-
     this.events.on(EVENTS.SHOW_EXAMPLE, this.handleShowExample)
     this.events.on(EVENTS.START_GAME, this.handleStartGame)
 
@@ -83,11 +81,10 @@ class MainScene extends Scene {
 
     this.playerCard = new Card({
       scene: this,
-      data: getCurrentCard(state) as CardData,
+      data: EXAMPLE_CARD,
       x: PLAYER_CARD_POS.x,
       y: PLAYER_CARD_POS.y,
     })
-    this.playerCard.activateDnd(true)
     this.add.existing(this.playerCard)
 
     this.stacks = STACK.map((cardData, idx) => {
@@ -167,18 +164,25 @@ class MainScene extends Scene {
       return
     }
 
+    this.updateCard()
+    this.stacks?.forEach(stack => stack.setScale(1))
+  }
+
+  private updateCard() {
+    const state = store.getState()
     const cardData = getCurrentCard(state)
     if (cardData) {
       this.playerCard?.updateCardData(cardData)
       this.playerCard?.setPosition(PLAYER_CARD_POS.x, PLAYER_CARD_POS.y)
     }
-
-    this.stacks?.forEach(stack => stack.setScale(1))
   }
 
   private handleShowExample = () => {}
 
-  private handleStartGame = () => {}
+  private handleStartGame = () => {
+    this.updateCard()
+    this.playerCard?.activateDnd(true)
+  }
 
   private loadAtlas = (atlas: ATLAS) => {
     this.load.multiatlas(atlas, `${ASSET_PATH}/${atlas}.json`, ASSET_PATH)

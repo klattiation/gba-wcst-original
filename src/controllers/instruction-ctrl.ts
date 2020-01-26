@@ -33,7 +33,7 @@ const instructions = [
   },
   {
     event: EVENTS.SHOW_EXAMPLE,
-    text: `Hier ein Beispiel zur Verdeutlichung:\r\nWenn du nach Farbe sortierst, würdest du auf die erste Karte klicken. Wenn du nach Form sortierst, würdest du die zweite Karte auswählen. Wenn du nach Anzahl sortierst, würdest du die dritte Karte anklicken. Ob du nach der richtigen Regel sortierst, erkennst du anhand des Feedbacks.`,
+    text: `Hier ein Beispiel zur Verdeutlichung:\r\nWenn du nach Anzahl sortierst, würdest du die untere Karte auf den ersten Stapel schieben. Wenn du nach Form sortierst, würdest du den zweiten Stapel auswählen. Wenn du nach Farbe sortierst, würdest du den dritten Stapel verwenden. Ob du nach der richtigen Regel sortierst, erkennst du anhand des Feedbacks.`,
     buttonText: `Weiter`,
   },
   {
@@ -41,6 +41,7 @@ const instructions = [
     buttonText: `Los geht's!`,
   },
   {
+    event: EVENTS.START_GAME,
     text: ``,
   },
 ]
