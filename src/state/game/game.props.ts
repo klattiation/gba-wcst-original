@@ -45,9 +45,7 @@ export interface GameState {
 }
 
 export interface PlayCardPayload {
-  stackCard: CardData
-  playedCard: CardData
-  trump: CriteriaName
+  isCorrect: boolean
 }
 
 export type PlayCardActionCreator = ActionCreator<

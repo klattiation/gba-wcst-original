@@ -28,11 +28,17 @@ class Card extends GameObjects.Sprite {
     this.setFrame(getFrame(cardData))
   }
 
-  activateDnd() {
-    this.setInteractive({ useHandCursor: true })
-    this.scene.input.setDraggable(this)
-    this.scene.input.on("dragstart", this.handleDragStart)
-    this.scene.input.on("drag", this.handleDrag)
+  activateDnd(flag: boolean) {
+    if (flag) {
+      this.setInteractive({ useHandCursor: true })
+      this.scene.input.setDraggable(this)
+      this.scene.input.on("dragstart", this.handleDragStart)
+      this.scene.input.on("drag", this.handleDrag)
+    } else {
+      this.removeInteractive()
+      this.scene.input.off("dragstart", this.handleDragStart)
+      this.scene.input.off("drag", this.handleDrag)
+    }
   }
 
   animateDragOver() {}

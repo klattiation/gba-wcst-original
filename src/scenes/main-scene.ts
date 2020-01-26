@@ -12,6 +12,7 @@ import { CardData } from "../state/game/game.props"
 import { STACK } from "../state/game/game.state"
 import CardStack from "../game-objects/card-stack"
 import { playCard } from "../state/game/game.actions"
+import FeedbackLabel from "../game-objects/feedback-label"
 
 const PLAYER_CARD_POS = new Phaser.Geom.Point(GAME_CENTER.x, 500)
 
@@ -19,6 +20,7 @@ class MainScene extends Scene {
   private flash: ErrorFlash | undefined
   private playerCard: Card | undefined
   private stacks: CardStack[] | undefined
+  private feedback: FeedbackLabel | undefined
 
   constructor() {
     super({ key: SCENE.MAIN })
@@ -30,13 +32,17 @@ class MainScene extends Scene {
 
   create() {
     const state = store.getState()
+
+    this.feedback = new FeedbackLabel({ scene: this })
+    this.add.existing(this.feedback)
+
     this.playerCard = new Card({
       scene: this,
       data: getCurrentCard(state) as CardData,
       x: PLAYER_CARD_POS.x,
       y: PLAYER_CARD_POS.y,
     })
-    this.playerCard.activateDnd()
+    this.playerCard.activateDnd(true)
     this.add.existing(this.playerCard)
 
     this.stacks = STACK.map((cardData, idx) => {
@@ -86,13 +92,26 @@ class MainScene extends Scene {
 
   private handleDrop = (
     pointer: Phaser.Input.Pointer,
-    draggedCard: Card,
+    card: Card,
     dropZone: GameObjects.Zone
   ) => {
+    const cardData = card.getData(CardDataKey.CARD_DATA) as CardData
     const stack = dropZone.parentContainer as CardStack
-    const playerCard = draggedCard.getData(CardDataKey.CARD_DATA)
     const trump = getTrumpCriteria(store.getState())
-    store.dispatch(playCard(playerCard, stack.cardData, trump))
+    const isCorrect = stack.cardData[trump] === cardData[trump]
+
+    stack.setScale(1)
+    card.activateDnd(false)
+    card.setPosition(stack.x, stack.y + 100)
+
+    this.feedback?.show(isCorrect, stack.x, stack.y + 200)
+
+    setTimeout(() => {
+      this.feedback?.hide()
+      card.setPosition(PLAYER_CARD_POS.x, PLAYER_CARD_POS.y)
+      card.activateDnd(true)
+      store.dispatch(playCard(isCorrect))
+    }, 2000)
   }
 
   private handleStoreUpdate = async () => {

@@ -24,8 +24,7 @@ const game: Reducer<GameState, AnyAction> = (
 }
 
 const doPlayCard = (state: GameState, payload: PlayCardPayload): GameState => {
-  const { playedCard, stackCard, trump } = payload
-  const isCorrect = stackCard[trump] === playedCard[trump]
+  const { isCorrect } = payload
   const round = state.round + 1
   const newCombo = isCorrect ? state.combo + 1 : 0
   const lastScore = last(state.scores) || 0

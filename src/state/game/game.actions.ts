@@ -4,17 +4,9 @@ const BASE = "GAME"
 export const PLAY_CARD = `${BASE}.PLAY_CARD`
 export const RESET = `${BASE}.RESET`
 
-export const playCard = (
-  playedCard: CardData,
-  stackCard: CardData,
-  trump: CriteriaName
-) => ({
+export const playCard = (isCorrect: boolean) => ({
   type: PLAY_CARD,
-  payload: {
-    playedCard,
-    stackCard,
-    trump,
-  },
+  payload: { isCorrect },
 })
 
 export const reset = () => ({
