@@ -1,11 +1,11 @@
 import Phaser, { GameObjects, Scene } from "phaser"
-import { ATLAS, ASSET_PATH, SCENE } from "../constants"
+import { ATLAS, ASSET_PATH, SCENE, GAME_CENTER } from "../constants"
 import Card from "../game-objects/cards/card"
-import { getIsGameComplete } from "../state/game/game.selectors"
+import { getIsGameComplete, getCurrentCard } from "../state/game/game.selectors"
 import ErrorFlash from "../game-objects/error-flash"
-import { GameEvent } from "../state/game-manager"
-import { GlobalState } from "../state/create-store"
-import { getGameManager } from "../utils"
+import { store } from ".."
+import { CardData } from "../state/game/game.props"
+import { STACK } from "../state/game/game.state"
 
 class MainScene extends Scene {
   private flash: ErrorFlash | undefined
@@ -19,12 +19,32 @@ class MainScene extends Scene {
   }
 
   create() {
+    const state = store.getState()
+    const playerCard = new Card({
+      scene: this,
+      data: getCurrentCard(state) as CardData,
+      x: GAME_CENTER.x,
+      y: 500,
+    })
+    playerCard.activateDnd()
+    this.add.existing(playerCard)
+
+    STACK.forEach((cardData, idx) => {
+      const stackCard = new Card({
+        scene: this,
+        data: cardData,
+        x: 570 + idx * 150,
+        y: 200,
+      })
+      this.add.existing(stackCard)
+    })
+
     this.input.on("dragenter", this.handleDragEnter)
     this.input.on("dragleave", this.handeDragLeave)
     this.input.on("dragend", this.handeDragEnd)
     this.input.on("drop", this.handleDrop)
 
-    getGameManager(this).on(GameEvent.STORE_UPDATE, this.handleStoreUpdate)
+    store.subscribe(this.handleStoreUpdate)
   }
 
   private handleDragEnter = (
@@ -32,8 +52,8 @@ class MainScene extends Scene {
     product: any,
     dropZone: GameObjects.Zone
   ) => {
-    const card: Card = dropZone.parentContainer as Card
-    card.animateDragOver()
+    // const card: Card = dropZone.parentContainer as Card
+    // card.animateDragOver()
   }
 
   private handeDragLeave = (
@@ -54,7 +74,8 @@ class MainScene extends Scene {
     dropZone: GameObjects.Zone
   ) => {}
 
-  private handleStoreUpdate = async (state: GlobalState) => {
+  private handleStoreUpdate = async () => {
+    const state = store.getState()
     const isGameOver = getIsGameComplete(state)
     if (isGameOver) {
       console.log("game over")

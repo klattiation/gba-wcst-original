@@ -1,13 +1,13 @@
 import { GlobalState as GS } from "../create-store"
 import { createSelector } from "reselect"
-import { ResolvedCard } from "./game.props"
-import { CARDS, CRITERIA_TRUMP_ORDER, CRITERIA_CARD_ORDERS } from "./game.state"
+import { PLAYER_CARDS, TRUMP_LIST } from "./game.state"
 import first from "lodash/first"
 import last from "lodash/last"
+import { CardData } from "./game.props"
 
-export const getCardIndex = (state: GS) => state.game.cardIndex
+export const getRound = (state: GS) => state.game.round
 
-const getCriteriaIndex = (state: GS) => state.game.criteriaTrumpIndex
+const getTrumpIndex = (state: GS) => state.game.criteriaTrumpIndex
 
 export const getScore = (state: GS) => last(state.game.scores) || 0
 
@@ -21,25 +21,18 @@ export const getRoundScore = (state: GS) =>
 export const getScoreHistory = (state: GS) => state.game.scores
 
 export const getTrumpCriteria = createSelector(
-  getCriteriaIndex,
-  criteriaIndex =>
-    CRITERIA_TRUMP_ORDER[criteriaIndex % CRITERIA_TRUMP_ORDER.length]
+  getTrumpIndex,
+  trumpIdx => TRUMP_LIST[trumpIdx % TRUMP_LIST.length]
 )
 
-export const getCriteriaOrder = createSelector(getCardIndex, cardIndex => {
-  const entry = CRITERIA_CARD_ORDERS.find(v => cardIndex < v.threshold)
-  return entry ? entry.order : null
-})
-
-export const getCurrentCard = createSelector<
-  GS,
-  number,
-  ResolvedCard | undefined
->(getCardIndex, cardIndex => CARDS[cardIndex])
+export const getCurrentCard = createSelector<GS, number, CardData | undefined>(
+  getRound,
+  round => PLAYER_CARDS[round]
+)
 
 export const getIsGameComplete = createSelector(
-  getCardIndex,
-  index => index >= CARDS.length
+  getRound,
+  round => round >= PLAYER_CARDS.length
 )
 
 export const getGameResults = createSelector(

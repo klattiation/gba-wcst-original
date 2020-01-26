@@ -24,7 +24,6 @@ export enum EVENTS {
 
 export const ASSET_PATH = "assets/atlases"
 
-export const INITIAL_SCORE = 10000
 export const GAME_WIDTH = 1600
 export const GAME_HEIGHT = 900
 export const GAME_CENTER = new Phaser.Geom.Point(

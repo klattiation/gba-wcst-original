@@ -1,44 +1,41 @@
 import { ActionCreator, AnyAction } from "redux"
 
 export enum CriteriaName {
-  Category = "category",
-  Design = "design",
-  Channel = "channel",
-  Value = "value",
-  Price = "price",
+  COLOR = "color",
+  EYES = "eyes",
+  SHAPE = "shape",
 }
 
-export interface CriteriaValue {
-  id: string
-  label: string
+export enum CardColor {
+  RED = "red",
+  GREEN = "green",
+  BLUE = "blue",
+  YELLOW = "yellow",
 }
 
-export interface CriteriaAssignment {
-  category: string
-  channel: string
-  design: string
-  price: string
-  value: string
+export enum CardEyes {
+  ONE = 1,
+  TWO = 2,
+  THREE = 3,
+  FOUR = 4,
 }
 
-export interface CardConfig extends CriteriaAssignment {
-  image: string
+export enum CardShape {
+  CIRCLE = "circle",
+  CROSS = "cross",
+  STAR = "star",
+  TRIANGLE = "triangle",
 }
 
-export interface ResolvedCriteriaAssignment {
-  category: CriteriaValue
-  channel: CriteriaValue
-  design: CriteriaValue
-  price: CriteriaValue
-  value: CriteriaValue
-}
-
-export interface ResolvedCard extends ResolvedCriteriaAssignment {
-  image: string
+// attributes must contain all CriteriaName enum values
+export interface CardData {
+  color: CardColor
+  eyes: CardEyes
+  shape: CardShape
 }
 
 export interface GameState {
-  cardIndex: number // current round
+  round: number // current round
   criteriaChanges: number[] // rounds where a trump criteria change happend
   criteriaOrderIndex: number // order in which categories are displayed
   criteriaTrumpIndex: number // category that is trump currently
@@ -48,8 +45,8 @@ export interface GameState {
 }
 
 export interface PlayCardPayload {
-  avatarData: ResolvedCriteriaAssignment
-  cardData: ResolvedCriteriaAssignment
+  stackCard: CardData
+  playedCard: CardData
   criteria: CriteriaName
 }
 
@@ -58,5 +55,5 @@ export type PlayCardActionCreator = ActionCreator<
 >
 
 export interface CardDragItem {
-  data: ResolvedCard
+  data: CardData
 }

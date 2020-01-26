@@ -1,7 +1,5 @@
-import { Scene, Tweens } from "phaser"
-import { Game } from ".."
+import { Tweens } from "phaser"
 
-export const getGameManager = (scene: Scene) => (scene.game as Game).manager
 export const stopTween = (tween?: Tweens.Tween) => {
   if (tween && tween.isPlaying) {
     tween.stop()

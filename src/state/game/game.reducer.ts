@@ -20,19 +20,20 @@ const game: Reducer<GameState, AnyAction> = (
 
 const SCORE_WIN = 500
 const SCORE_LOSE = -500
+const CRITERIA_CHANGE_THRESHOLD = 7
 
 const doPlayCard = (state: GameState, payload: PlayCardPayload): GameState => {
-  const { avatarData, cardData, criteria } = payload
-  const isCorrect = avatarData[criteria].id === cardData[criteria].id
-  const cardIndex = state.cardIndex + 1
+  const { playedCard, stackCard, criteria } = payload
+  const isCorrect = stackCard[criteria] === playedCard[criteria]
+  const round = state.round + 1
   const newCombo = isCorrect ? state.combo + 1 : 0
   const lastScore = last(state.scores) || 0
-  const isCriteriaChange = newCombo >= 7
+  const isCriteriaChange = newCombo >= CRITERIA_CHANGE_THRESHOLD
   return {
     ...state,
-    cardIndex,
+    round,
     criteriaChanges: isCriteriaChange
-      ? [...state.criteriaChanges, cardIndex]
+      ? [...state.criteriaChanges, round]
       : state.criteriaChanges,
     criteriaTrumpIndex: isCriteriaChange
       ? state.criteriaTrumpIndex + 1

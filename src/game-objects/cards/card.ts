@@ -1,39 +1,34 @@
 import { GameObjects, Scene, Tweens } from "phaser"
 import { ATLAS } from "../../constants"
-import { ResolvedCriteriaAssignment } from "../../state/game/game.props"
 import { stopTween } from "../../utils"
-
-const { Sprite, Zone } = GameObjects
+import { CardData } from "../../state/game/game.props"
 
 interface CardProps {
-  avatarId: string
-  data: ResolvedCriteriaAssignment
+  data: CardData
   scene: Scene
   x: number
   y: number
 }
 
-class Card extends GameObjects.Container {
-  private sprite: GameObjects.Sprite
-  private zone: GameObjects.Zone
+class Card extends GameObjects.Sprite {
   private tween: Tweens.Tween | undefined
 
-  constructor(private props: CardProps) {
-    super(props.scene, props.x, props.y)
+  constructor(props: CardProps) {
+    super(props.scene, props.x, props.y, ATLAS.LEVEL, getFrame(props.data))
+    this.setData(props.data)
 
-    const { data, scene, avatarId } = props
-    this.setData(data)
+    // const bounds = this.sprite.getBounds()
+    // this.zone = new Zone(scene, 0, 0, bounds.width, bounds.height)
+    // this.zone.setOrigin(this.sprite.originX, this.sprite.originY)
+    // this.zone.setRectangleDropZone(bounds.width, bounds.height)
+    // this.add(this.zone)
+  }
 
-    this.sprite = new Sprite(scene, 0, 0, ATLAS.LEVEL)
-    this.sprite.setInteractive()
-    this.add(this.sprite)
-
-    const bounds = this.sprite.getBounds()
-
-    this.zone = new Zone(scene, 0, 0, bounds.width, bounds.height)
-    this.zone.setOrigin(this.sprite.originX, this.sprite.originY)
-    this.zone.setRectangleDropZone(bounds.width, bounds.height)
-    this.add(this.zone)
+  activateDnd() {
+    this.setInteractive({ useHandCursor: true })
+    this.scene.input.setDraggable(this)
+    this.scene.input.on("dragstart", this.handleDragStart)
+    this.scene.input.on("drag", this.handleDrag)
   }
 
   animateDragOver() {}
@@ -59,6 +54,25 @@ class Card extends GameObjects.Container {
       })
     })
   }
+
+  private handleDragStart = (pointer: any, gameObject: GameObjects.Sprite) => {
+    this.scene.children.bringToTop(gameObject)
+  }
+
+  private handleDrag = (
+    pointer: any,
+    gameObject: GameObjects.Sprite,
+    dragX: number,
+    dragY: number
+  ) => {
+    gameObject.x = dragX
+    gameObject.y = dragY
+  }
+}
+
+const getFrame = (data: CardData) => {
+  const { shape, color, eyes } = data
+  return `${shape}${eyes}${color}.png`
 }
 
 export default Card
