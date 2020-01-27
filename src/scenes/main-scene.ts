@@ -23,7 +23,7 @@ import { playCard } from "../state/game/game.actions"
 import FeedbackLabel from "../game-objects/feedback-label"
 import { InstructionController } from "../controllers/instruction-ctrl"
 import Button from "../game-objects/button"
-import { saveResult } from "../services/api-srv"
+import { saveResult, wakeUpApi } from "../services/api-srv"
 
 const PLAYER_CARD_POS = new Geom.Point(GAME_CENTER.x, 450)
 
@@ -31,6 +31,7 @@ class MainScene extends Scene {
   private playerCard: Card | undefined
   private stacks: CardStack[] | undefined
   private feedback: FeedbackLabel | undefined
+  private resultLabel: GameObjects.Text | undefined
   private instructionCtrl: InstructionController
   private instructionLabel: GameObjects.Text | undefined
   private instructionBtn: Button | undefined
@@ -42,6 +43,7 @@ class MainScene extends Scene {
   }
 
   preload() {
+    wakeUpApi()
     this.loadAtlas(ATLAS.LEVEL)
   }
 
@@ -66,17 +68,7 @@ class MainScene extends Scene {
       x: 0,
       y: 800,
       text: instruction.buttonText,
-      onClick: btn => {
-        const nextInstr = this.instructionCtrl.next()
-        this.instructionLabel?.setText(nextInstr.text)
-        if (nextInstr.buttonText) {
-          btn.setText(nextInstr.buttonText)
-          btn.setX(btn.getWidth() / 2 + 32)
-          btn.setVisible(true)
-        } else {
-          btn.setVisible(false)
-        }
-      },
+      onClick: () => this.showNextInstruction(),
     })
     this.instructionBtn.setX(this.instructionBtn.getWidth() / 2 + 32)
     this.add.existing(this.instructionBtn)
@@ -107,6 +99,19 @@ class MainScene extends Scene {
     this.input.on("drop", this.handleDrop)
 
     store.subscribe(this.handleStoreUpdate)
+  }
+
+  private showNextInstruction() {
+    const nextInstr = this.instructionCtrl.next()
+    this.instructionLabel?.setText(nextInstr.text)
+    const btn = this.instructionBtn as Button
+    if (nextInstr.buttonText) {
+      btn.setText(nextInstr.buttonText)
+      btn.setX(btn.getWidth() / 2 + 32)
+      btn.setVisible(true)
+    } else {
+      btn.setVisible(false)
+    }
   }
 
   private handleDragEnter = (
@@ -164,9 +169,10 @@ class MainScene extends Scene {
     const isGameOver = getIsGameComplete(state)
     if (isGameOver) {
       this.playerCard?.setVisible(false)
-      await saveResult(getGameResults(state))
       this.hideCards()
-      this.showResult()
+      this.showResult("Daten werden übermittelt...")
+      await saveResult(getGameResults(state))
+      this.showResult("Vielen Dank für's Mitmachen!")
     }
 
     this.updateCard()
@@ -179,13 +185,18 @@ class MainScene extends Scene {
     this.stacks?.forEach(stack => stack.setVisible(false))
   }
 
-  private showResult() {
+  private showResult(text: string) {
     const { x, y } = GAME_CENTER
-    const label = this.add.text(x, y, "Vielen Dank für's Mitmachen!", {
-      ...instructionFontStyle,
-      fontSize: "48px",
-    })
-    label.setOrigin(0.5)
+    if (this.resultLabel) {
+      this.resultLabel.setVisible(true)
+      this.resultLabel.setText(text)
+    } else {
+      this.resultLabel = this.add.text(x, y, text, {
+        ...instructionFontStyle,
+        fontSize: "48px",
+      })
+      this.resultLabel.setOrigin(0.5)
+    }
   }
 
   private updateCard() {

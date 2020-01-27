@@ -40,3 +40,9 @@ export const saveResult = async (result: GameResult) => {
     return false
   }
 }
+
+/**
+ * Ping the Heroku app, so that it's already running when we
+ * submit the game results.
+ */
+export const wakeUpApi = () => fetch(`${API_BASE_URL}`)
