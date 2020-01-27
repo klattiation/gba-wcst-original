@@ -76,6 +76,10 @@ export const PLAYER_CARDS: CardData[] = [
   { shape: STAR, eyes: 3, color: RED },
   { shape: CIRCLE, eyes: 2, color: YELLOW },
   { shape: CROSS, eyes: 1, color: GREEN },
+  { shape: CIRCLE, eyes: 3, color: GREEN },
+  { shape: STAR, eyes: 4, color: RED },
+  { shape: STAR, eyes: 2, color: RED },
+  { shape: CROSS, eyes: 1, color: BLUE },
 ]
 
 export const EXAMPLE_CARD: CardData = {

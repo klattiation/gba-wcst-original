@@ -32,7 +32,7 @@ export const getCurrentCard = createSelector<GS, number, CardData | undefined>(
 
 export const getIsGameComplete = createSelector(
   getRound,
-  round => round >= 3 // PLAYER_CARDS.length
+  round => round >= PLAYER_CARDS.length
 )
 
 export const getGameResults = createSelector(
