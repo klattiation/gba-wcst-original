@@ -23,7 +23,7 @@ export enum EVENTS {
   SHOW_EXAMPLE = "showExample",
 }
 
-export const ASSET_PATH = "assets/atlases"
+export const ASSET_PATH = "https://gba-wcst-original.netlify.com/assets/atlases"
 
 export const GAME_WIDTH = 1600
 export const GAME_HEIGHT = 900
