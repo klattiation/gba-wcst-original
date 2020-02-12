@@ -8,7 +8,7 @@ export const store = createStore()
 
 new Phaser.Game({
   type: Phaser.AUTO,
-  parent: "root",
+  parent: "game-root",
   scale: {
     mode: Phaser.Scale.FIT,
     autoCenter: Phaser.Scale.CENTER_BOTH,

@@ -23,7 +23,7 @@ import { playCard } from "../state/game/game.actions"
 import FeedbackLabel from "../game-objects/feedback-label"
 import { InstructionController } from "../controllers/instruction-ctrl"
 import Button from "../game-objects/button"
-import { saveResult, wakeUpApi } from "../services/api-srv"
+import { saveResultToInput } from "../services/api-srv"
 
 const PLAYER_CARD_POS = new Geom.Point(GAME_CENTER.x, 450)
 
@@ -43,7 +43,6 @@ class MainScene extends Scene {
   }
 
   preload() {
-    wakeUpApi()
     this.loadAtlas(ATLAS.LEVEL)
   }
 
@@ -171,7 +170,7 @@ class MainScene extends Scene {
       this.playerCard?.setVisible(false)
       this.hideCards()
       this.showResult("Daten werden übermittelt...")
-      await saveResult(getGameResults(state))
+      await saveResultToInput(getGameResults(state))
       this.showResult("Vielen Dank für's Mitmachen!")
     }
 
