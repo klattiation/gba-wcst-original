@@ -9,11 +9,16 @@ interface GameResult {
 const API_BASE_URL = "https://gba-wisconsin-masterarbeit.herokuapp.com"
 const GAME_ID = "original"
 
-const GAME_INPUT_ID = "game-data"
+const GAME_ROOT_ID = "game-root"
 
 export const saveResultToInput = (res: GameResult) =>
   new Promise((resolve, reject) => {
-    const element = document.getElementById(GAME_INPUT_ID)
+    const gameRoot = document.getElementById(GAME_ROOT_ID)
+    if (!gameRoot) {
+      return reject()
+    }
+    const inputId = gameRoot.dataset.input as string
+    const element = document.getElementById(inputId)
     if (!element) {
       return reject()
     }
