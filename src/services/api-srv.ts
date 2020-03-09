@@ -23,6 +23,7 @@ export const saveResultToInput = (res: GameResult) =>
       return reject()
     }
     element.setAttribute("value", JSON.stringify(res))
+    gameRoot.dispatchEvent(new CustomEvent("complete", { detail: res }))
     resolve()
   })
 
